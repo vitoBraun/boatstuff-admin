@@ -1,35 +1,8 @@
 import React, { ReactElement } from "react";
-import { useQuery } from "react-query";
-
-type ICategory = {
-  id: string;
-  title: string;
-  description: string;
-};
-
-type Product = {
-  id: string;
-  title: string;
-  shortDescription: string;
-  description: string;
-  price: number;
-  isNew: boolean;
-  isAvailable: boolean;
-  categories: ICategory[];
-  images?: string[];
-};
-
-const fetchProducts = async () => {
-  const response = await fetch("http://localhost:1333/product/list");
-  return response.json();
-};
+import useProducts from "../common/useProducts";
 
 export default function Products() {
-  const {
-    data: products,
-    isLoading,
-    isError,
-  } = useQuery<Product[]>("products", fetchProducts);
+  const { products, isLoading, isError } = useProducts();
 
   if (isLoading) {
     return <div>Loading...</div>;
