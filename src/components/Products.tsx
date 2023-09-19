@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
 import useProducts from "../common/useProducts";
+import { Product } from "../types/types";
 
 export default function Products() {
   const { products, isLoading, isError } = useProducts();
@@ -52,7 +53,7 @@ export default function Products() {
                 </tr>
               </thead>
               <tbody>
-                {products?.map((product) => (
+                {(products as Product[])?.map((product) => (
                   <tr
                     className="bg-gray-100 border-b hover:bg-gray-200 cursor-pointer"
                     onClick={() => {

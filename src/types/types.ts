@@ -2,6 +2,7 @@ export type ICategory = {
   id: string;
   title: string;
   description: string;
+  level: number;
 };
 
 export type Product = {
