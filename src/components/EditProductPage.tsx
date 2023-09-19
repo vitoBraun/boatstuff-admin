@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useProduct } from '../common/useProducts';
 import useCategories from '../common/useCategories';
 import { TextArea, TextField } from './TextComponents';
+import { createNewProduct, updateProduct } from '../common/ApiService';
 
 function getCategoryBySubcategoryId(categories: ICategory[], subcategoryId: number) {
   for (const category of categories) {
@@ -18,46 +19,6 @@ function getCategoryBySubcategoryId(categories: ICategory[], subcategoryId: numb
 
   return null;
 }
-const prepareData = (data: Product) => {
-  const dataCopy = { ...data }
-  if (dataCopy.id && typeof dataCopy.id === 'string') {
-    dataCopy.id = Number(dataCopy.id);
-  }
-  if (dataCopy.price && typeof dataCopy.price === 'string') {
-    dataCopy.price = Number(dataCopy.price);
-  }
-  return dataCopy;
-}
-
-const updateProduct = async (productData: Product) => {
-  const response = await fetch('http://localhost:1333/product', {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(prepareData(productData)),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error('Something went wrong');
-  }
-  return data;
-}
-
-const createNewProduct = async (newData: Product) => {
-  const response = await fetch('http://localhost:1333/product/create', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(prepareData(newData)),
-  });
-
-  const data = await response.json();
-  return data;
-};
 
 export default function ProductEditPage({ initialValues }: { initialValues?: Product }) {
   const { id } = useParams();
@@ -75,7 +36,7 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
     categoryId: null
   }
 
-  const { product, isLoading, isError, refetch } = useProduct({
+  const { product, isLoading, isError, } = useProduct({
     productId: NumberId!, parameters: {
       enabled: id !== undefined,
       cacheTime: 0,
@@ -98,14 +59,11 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
     onSubmit: () => {
       if (NumberId) {
         updateProduct(fetchetProduct).then((data) => {
-          // refetch()
           navigate('/products')
         }
         ).catch((error) => {
           alert(error.message)
         });
-
-
       }
       else {
         createNewProduct(fetchetProduct).then((data) => { navigate('/products') }
@@ -128,6 +86,7 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
       }
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product])
 
   useEffect(() => {

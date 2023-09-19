@@ -1,26 +1,6 @@
 import { useQuery } from "react-query";
 import { Product } from "../types/types";
-import { conf } from "./config";
-
-const fetchProducts = async () => {
-  const resp = await fetch(`${conf.API_URL}/product/list`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return resp.json();
-};
-
-const fetchProduct = async (productId: number) => {
-  const resp = await fetch(`${conf.API_URL}/product/${productId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return resp.json();
-};
+import { fetchProduct, fetchProducts } from "./ApiService";
 
 export function useProduct({
   productId,
