@@ -28,18 +28,23 @@ export default function ProductEditPage() {
     categoryId: null
   }
 
+
+
+  const [fetchedProduct, setFetchedProduct] = useState<Product>(defaultValues)
+
   const { isLoading: IsCategoriesLoading } = useCategories({
     parameters: {
       staleTime: 0,
       cacheTime: 0,
       onSuccess: (data: ICategory[]) => {
         setFetchedCategories(data)
-
+        const categoryId = getCategoryBySubcategoryId(data, fetchedProduct?.subcategoryId!)
+        if (categoryId) {
+          setFetchedProduct(prev => ({ ...prev, categoryId }))
+        }
       }
     }
   })
-
-  const [fetchedProduct, setFetchedProduct] = useState<Product>(defaultValues)
 
   const [fetchedCategories, setFetchedCategories] = useState<ICategory[]>()
 
@@ -59,7 +64,7 @@ export default function ProductEditPage() {
       }
     }
   })
-  const subcategories = fetchedCategories?.find(cat => cat.id === fetchedProduct.categoryId)?.subcategories
+
 
 
   const { mutateAsync: createProductMutation } = useMutation({
@@ -88,6 +93,8 @@ export default function ProductEditPage() {
   })
 
   const selectedCategory = fetchedCategories?.find(cat => cat.id === fetchedProduct?.categoryId) || fetchedCategories?.[0]
+
+  const subcategories = fetchedCategories?.find(cat => cat.id === selectedCategory?.id)?.subcategories
 
   const { mutateAsync: deleteCategoryMutation } = useMutation({
     mutationFn: () => deleteCategory(selectedCategory?.id?.toString()!),
@@ -126,20 +133,6 @@ export default function ProductEditPage() {
   });
 
 
-
-  useEffect(() => {
-    if (fetchedCategories && fetchedProduct.subcategoryId) {
-      const categoryId = getCategoryBySubcategoryId(fetchedCategories, fetchedProduct.subcategoryId)
-      if (categoryId) {
-        setFetchedProduct(prev => ({ ...prev, categoryId }))
-      }
-
-    }
-  }, [fetchedCategories, fetchedProduct.subcategoryId])
-
-
-  console.log(selectedCategory)
-
   if (isLoading) return <div className=" justify-center w-full  items-center px-20 pt-20 pb-20">
     <h2 className="pb-10 text-xl font-bold ">LOADING...</h2></div>
 
@@ -164,12 +157,11 @@ export default function ProductEditPage() {
           <select name="categoryId" className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-500" value={selectedCategory?.id ?? ''} onChange={(e) => {
             setFetchedProduct(prev => ({ ...prev, categoryId: Number(e.target.value) }))
           }}>
-
             {fetchedCategories?.length && fetchedCategories.map((cat) => <option key={cat.id} value={cat.id}>{cat.title}</option>)}
           </select>
 
           <label htmlFor="subcategoryId" className="text-sm text-navy-700 font-bold">Subcategory</label>
-          <select value={fetchedProduct.subcategoryId ?? ''} name="subcategoryId" className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-500" onChange={(e) => {
+          <select value={fetchedProduct?.subcategoryId ?? ''} name="subcategoryId" className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-500" onChange={(e) => {
             setFetchedProduct(prev => ({ ...prev, subcategoryId: Number(e.target.value) }))
           }}>
             {subcategories?.length && subcategories.map((cat) => <option key={cat.id} value={cat.id}>{cat.title}</option>)}
