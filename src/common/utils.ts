@@ -17,7 +17,7 @@ export function getCategoryBySubcategoryId(
 ) {
   for (const category of categories) {
     const subcategories = category.subcategories;
-    for (const subcategory of subcategories) {
+    for (const subcategory of subcategories!) {
       if (subcategory.id === subcategoryId) {
         return category.id;
       }

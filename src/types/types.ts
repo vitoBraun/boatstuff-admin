@@ -1,9 +1,8 @@
 export type ICategory = {
-  id: number;
+  id?: number;
   title: string;
   description: string;
-  level: number;
-  subcategories: Subcategory[];
+  subcategories?: Subcategory[];
 };
 
 export type Subcategory = {
