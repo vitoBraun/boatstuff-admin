@@ -9,6 +9,7 @@ export const fetchProducts = async () => {
       "Content-Type": "application/json",
     },
   });
+  console.log("fetched");
   return resp.json();
 };
 
@@ -47,6 +48,19 @@ export const updateProduct = async (productData: Product) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(prepareData(productData)),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Something went wrong");
+  }
+  return data;
+};
+
+export const deleteProduct = async (productId: string) => {
+  const response = await fetch(`http://localhost:1333/product/${productId}`, {
+    method: "DELETE",
   });
 
   const data = await response.json();

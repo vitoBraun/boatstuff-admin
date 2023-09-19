@@ -1,6 +1,6 @@
 import { ChangeEvent } from "react"
 
-export const TextField = ({ onChange, value, name, label, ...restProps }: { onChange?: (e: ChangeEvent<HTMLInputElement>) => void, value: string | number | null, name: string, label: string }) => {
+export const TextField = ({ onChange, value, name, label, ...restProps }: { onChange?: (e: ChangeEvent<HTMLInputElement>) => void, value?: string | number | null, name?: string, label?: string }) => {
     return <><label htmlFor="title" className="text-sm text-navy-700 font-bold">{label}</label>
         <input
             type="text"
