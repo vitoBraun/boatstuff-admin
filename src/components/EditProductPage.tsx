@@ -78,7 +78,6 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
   const { product, isLoading, isError, refetch } = useProduct({
     productId: NumberId!, parameters: {
       enabled: id !== undefined,
-      // staleTime: Infinity,
       cacheTime: 0,
     }
   })
