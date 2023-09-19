@@ -13,6 +13,7 @@ export default function useProducts(productId?: number, parameters?: any) {
     data: products,
     isLoading,
     isError,
+    refetch,
   } = useQuery<Product[] | Product>(
     "products",
     () => fetchProducts(Number(productId)),
@@ -22,5 +23,6 @@ export default function useProducts(productId?: number, parameters?: any) {
     products,
     isLoading,
     isError,
+    refetch,
   };
 }

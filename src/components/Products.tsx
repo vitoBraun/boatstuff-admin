@@ -3,9 +3,9 @@ import useProducts from "../common/useProducts";
 import { Product } from "../types/types";
 import { useNavigate } from 'react-router-dom';
 
-
 export default function Products() {
   const { products, isLoading, isError } = useProducts();
+
   const navigate = useNavigate();
   if (isLoading) {
     return <div>Loading...</div>;

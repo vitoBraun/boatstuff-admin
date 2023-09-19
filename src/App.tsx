@@ -10,6 +10,7 @@ import EditProductPage from "./components/EditProductPage";
 const queryClient = new QueryClient();
 
 function App() {
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>

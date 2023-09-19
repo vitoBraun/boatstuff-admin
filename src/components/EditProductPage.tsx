@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Product } from '../types/types'
 import { useFormik } from 'formik';
 import { useParams } from "react-router-dom";
@@ -32,7 +32,6 @@ const TextArea = ({ onChange, value, name, label, ...restProps }: { onChange: (e
 
 export default function ProductEditPage({ initialValues }: { initialValues?: Product }) {
   let { id } = useParams();
-
   const defaultValues: Product = {
     id: '',
     title: '',
@@ -44,11 +43,16 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
     categories: [],
   }
 
-  const { products, isLoading, isError } = useProducts(Number(id), {
+  const { products, isLoading, isError, refetch } = useProducts(Number(id), {
     enabled: !initialValues,
     staleTime: Infinity,
     cacheTime: Infinity,
   })
+
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   const { categories, isLoading: categoriesLoading } = useCategories({ level: 1 })
 
