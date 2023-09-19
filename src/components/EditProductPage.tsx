@@ -29,7 +29,6 @@ const prepareData = (data: Product) => {
   return dataCopy;
 }
 
-
 const updateProduct = async (productData: Product) => {
   const response = await fetch('http://localhost:1333/product', {
     method: 'PATCH',
@@ -70,8 +69,8 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
     shortDescription: '',
     description: '',
     price: null,
-    isNew: false,
-    isAvailable: false,
+    isNew: true,
+    isAvailable: true,
     subcategoryId: null,
     categoryId: null
   }
@@ -79,8 +78,8 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
   const { product, isLoading, isError, refetch } = useProduct({
     productId: NumberId!, parameters: {
       enabled: id !== undefined,
-      staleTime: Infinity,
-      cacheTime: Infinity,
+      // staleTime: Infinity,
+      cacheTime: 0,
     }
   })
 
@@ -100,7 +99,7 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
     onSubmit: () => {
       if (NumberId) {
         updateProduct(fetchetProduct).then((data) => {
-          refetch()
+          // refetch()
           navigate('/products')
         }
         ).catch((error) => {
@@ -175,11 +174,11 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
         </select>
         <div className='block'>
           <label className="inline-flex items-center mt-3">
-            <input name="isNew" onChange={handleFieldChange} type="checkbox" className="form-checkbox h-5 w-5 text-red-600" /><span className="ml-2 text-gray-700">New Product</span>
+            <input name="isNew" onChange={(e) => { setFetchedProduct(prev => ({ ...prev, isNew: !prev.isNew })) }} type="checkbox" className="form-checkbox h-5 w-5 text-red-600" checked={fetchetProduct.isNew} /><span className="ml-2 text-gray-700" >New Product</span>
           </label></div>
         <div className='block'>
           <label className="inline-flex  items-center mt-3">
-            <input name="isAvailable" checked={formik.values.isAvailable} onChange={handleFieldChange} type="checkbox" className="form-checkbox h-5 w-5 text-red-600" /><span className=" ml-2 text-gray-700">Available</span>
+            <input name="isAvailable" checked={fetchetProduct.isAvailable} onChange={(e) => { setFetchedProduct(prev => ({ ...prev, isAvailable: !prev.isAvailable })) }} type="checkbox" className="form-checkbox h-5 w-5 tsext-red-600" /><span className=" ml-2 text-gray-700">Available</span>
           </label></div>
         <button className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400" >Save</button>
       </form>
