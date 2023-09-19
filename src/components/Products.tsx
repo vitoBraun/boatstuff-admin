@@ -1,10 +1,12 @@
 import React, { ReactElement } from "react";
 import useProducts from "../common/useProducts";
 import { Product } from "../types/types";
+import { useNavigate } from 'react-router-dom';
+
 
 export default function Products() {
   const { products, isLoading, isError } = useProducts();
-
+  const navigate = useNavigate();
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -43,7 +45,7 @@ export default function Products() {
               <thead className="bg-white border-b">
                 <tr>
                   {Headers.map((header) => (
-                    <th
+                    <th key={header}
                       scope="col"
                       className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                     >
@@ -54,10 +56,10 @@ export default function Products() {
               </thead>
               <tbody>
                 {(products as Product[])?.map((product) => (
-                  <tr
+                  <tr key={product.id}
                     className="bg-gray-100 border-b hover:bg-gray-200 cursor-pointer"
                     onClick={() => {
-                      alert(product.id);
+                      navigate(`/product/${product.id}`);
                     }}
                   >
                     <Cell text={product.id} />
@@ -68,7 +70,7 @@ export default function Products() {
                       text={
                         <ul>
                           {product.categories.map((category) => (
-                            <li>{category.title}</li>
+                            <li key={category.id}>{category.title}</li>
                           ))}
                         </ul>
                       }

@@ -3,7 +3,7 @@ import { ICategory } from "../types/types";
 import { conf } from "./config";
 
 const fetchProducts = async (level?: number) => {
-  const response = await fetch(`${conf.API_URL}/categories/list/${level}`);
+  const response = await fetch(`${conf.API_URL}/category/list/${level}`);
   return response.json();
 };
 export default function useCategories({ level }: { level?: number }) {
@@ -11,7 +11,10 @@ export default function useCategories({ level }: { level?: number }) {
     data: categories,
     isLoading,
     isError,
-  } = useQuery<ICategory[]>("products", () => fetchProducts(level));
+  } = useQuery<ICategory[]>("categories", () => fetchProducts(level), {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
   return {
     categories,
     isLoading,

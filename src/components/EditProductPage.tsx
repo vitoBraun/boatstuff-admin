@@ -3,6 +3,7 @@ import { Product } from '../types/types'
 import { useFormik } from 'formik';
 import { useParams } from "react-router-dom";
 import useProducts from '../common/useProducts';
+import useCategories from '../common/useCategories';
 
 
 const TextField = ({ onChange, value, name, label, ...restProps }: { onChange: (e: ChangeEvent<HTMLInputElement>) => void, value: string | number, name: string, label: string }) => {
@@ -43,18 +44,22 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
     categories: [],
   }
 
-  const { products, isLoading, isError } = useProducts(Number(id), { enabled: !initialValues })
+  const { products, isLoading, isError } = useProducts(Number(id), {
+    enabled: !initialValues,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  })
 
+  const { categories, isLoading: categoriesLoading } = useCategories({ level: 1 })
 
   const [fetchetProduct, setFetchedProduct] = useState<Product>(defaultValues)
-  console.log(fetchetProduct)
 
   const hasLoaded = useRef(false)
 
   const formik = useFormik({
     initialValues: fetchetProduct,
     onSubmit: (values) => {
-      console.log(values)
+      console.log(fetchetProduct)
     }
   });
 
@@ -71,6 +76,7 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
 
   }, [products])
 
+
   if (isLoading) return <div> LOADING...</div>
 
   if (isError) return <div> ERROR </div>
@@ -85,11 +91,12 @@ export default function ProductEditPage({ initialValues }: { initialValues?: Pro
         <TextField name="price" label="Price" value={fetchetProduct.price} onChange={handleFieldChange} />
 
         <label htmlFor="category" className="text-sm text-navy-700 font-bold">Category</label>
-        <select name="category" className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-500">
-          <option>{fetchetProduct.categories?.[0]?.title}</option>
-
+        <select onChange={(e) => {
+          setFetchedProduct(prev => ({ ...prev, categories: ([{ id: e.target.value }] as any) }))
+        }} name="category" className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-500">
+          <option value={fetchetProduct.categories?.[0]?.id}>{fetchetProduct.categories?.[0]?.title}</option>
+          {categories?.length && categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.title}</option>)}
         </select>
-
         <div className='block'>
           <label className="inline-flex items-center mt-3">
             <input onChange={(e) => setFetchedProduct(prev => ({ ...prev, isNew: !prev.isNew }))} type="checkbox" className="form-checkbox h-5 w-5 text-red-600" checked={fetchetProduct.isNew} /><span className="ml-2 text-gray-700">New Product</span>
