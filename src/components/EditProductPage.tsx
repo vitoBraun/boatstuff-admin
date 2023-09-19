@@ -1,26 +1,15 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
-import { ICategory, Product } from '../types/types'
+import { Product } from '../types/types'
 import { useFormik } from 'formik';
 import { useNavigate, useParams } from "react-router-dom";
 import { useProduct } from '../common/useProducts';
 import useCategories from '../common/useCategories';
 import { TextArea, TextField } from './TextComponents';
 import { createNewProduct, updateProduct } from '../common/ApiService';
+import { getCategoryBySubcategoryId } from '../common/utils';
 
-function getCategoryBySubcategoryId(categories: ICategory[], subcategoryId: number) {
-  for (const category of categories) {
-    const subcategories = category.subcategories;
-    for (const subcategory of subcategories) {
-      if (subcategory.id === subcategoryId) {
-        return category.id;
-      }
-    }
-  }
 
-  return null;
-}
-
-export default function ProductEditPage({ initialValues }: { initialValues?: Product }) {
+export default function ProductEditPage() {
   const { id } = useParams();
   const NumberId = id ? Number(id) : undefined
   const navigate = useNavigate();
