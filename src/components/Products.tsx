@@ -1,10 +1,10 @@
 import React, { ReactElement } from "react";
-import useProducts from "../common/useProducts";
+import { useProducts } from "../common/useProducts";
 import { Product } from "../types/types";
 import { useNavigate } from 'react-router-dom';
 
 export default function Products() {
-  const { products, isLoading, isError } = useProducts();
+  const { products, isLoading, isError } = useProducts({ parameters: {} });
 
   const navigate = useNavigate();
   if (isLoading) {
@@ -20,7 +20,7 @@ export default function Products() {
     "title",
     "short description",
     "availability",
-    "categories",
+    "subcategory",
     "price",
     "images",
   ];
@@ -28,7 +28,7 @@ export default function Products() {
   const Cell = ({
     text,
   }: {
-    text?: string | number | ReactElement | string[];
+    text?: string | number | ReactElement | string[] | null;
   }): ReactElement => {
     return (
       <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
@@ -66,15 +66,7 @@ export default function Products() {
                     <Cell text={product.title} />
                     <Cell text={product.shortDescription} />
                     <Cell text={product.isAvailable ? "YES" : "NO"} />
-                    <Cell
-                      text={
-                        <ul>
-                          {product.categories.map((category) => (
-                            <li key={category.id}>{category.title}</li>
-                          ))}
-                        </ul>
-                      }
-                    />
+                    <Cell text={product.subcategoryId} />
                     <Cell text={product.price} />
                     <Cell text={product.images} />
                   </tr>
