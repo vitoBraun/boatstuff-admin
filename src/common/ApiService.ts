@@ -1,4 +1,4 @@
-import { ICategory, Product } from "../types/types";
+import { ICategory, Product, Subcategory } from "../types/types";
 import { conf } from "./config";
 import { prepareData } from "./utils";
 
@@ -77,6 +77,19 @@ export const createNewCategory = async (category: ICategory) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(category),
+  });
+
+  const data = await response.json();
+  return data;
+};
+
+export const createNewSubcategory = async (subcategory: Subcategory) => {
+  const response = await fetch("http://localhost:1333/category/subcategory", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(subcategory),
   });
 
   const data = await response.json();

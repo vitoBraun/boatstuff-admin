@@ -6,10 +6,10 @@ export type ICategory = {
 };
 
 export type Subcategory = {
-  id: number;
+  id?: number;
   title: string;
   description: string;
-  categoryId: number;
+  categoryId?: number;
 };
 
 export type Product = {

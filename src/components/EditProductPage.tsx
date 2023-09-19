@@ -1,11 +1,11 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import { ICategory, Product } from '../types/types'
+import { ICategory, Product, Subcategory } from '../types/types'
 import { useFormik } from 'formik';
 import { useNavigate, useParams } from "react-router-dom";
 import { useProduct } from '../common/useProducts';
 import useCategories from '../common/useCategories';
 import { TextArea, TextField } from './TextComponents';
-import { createNewCategory, createNewProduct, deleteCategory, deleteProduct, updateProduct } from '../common/ApiService';
+import { createNewCategory, createNewProduct, createNewSubcategory, deleteCategory, deleteProduct, updateProduct } from '../common/ApiService';
 import { getCategoryBySubcategoryId } from '../common/utils';
 import { useMutation, useQueryClient } from 'react-query';
 
@@ -54,6 +54,7 @@ export default function ProductEditPage() {
     description: ''
   })
 
+
   const { isLoading, isError, } = useProduct({
     productId: NumberId!, parameters: {
       enabled: id !== undefined,
@@ -92,7 +93,17 @@ export default function ProductEditPage() {
     }
   })
 
+
+
+
   const selectedCategory = fetchedCategories?.find(cat => cat.id === fetchedProduct?.categoryId) || fetchedCategories?.[0]
+
+
+  const [newSubcategory, setNewSubcategory] = useState<Subcategory>({
+    title: '',
+    description: 'Hello',
+    categoryId: Number(selectedCategory?.id)
+  })
 
   const subcategories = fetchedCategories?.find(cat => cat.id === selectedCategory?.id)?.subcategories
 
@@ -102,6 +113,16 @@ export default function ProductEditPage() {
       queryClient.invalidateQueries(['categories'])
     }
   })
+
+  const { mutateAsync: createSubcategoryMutation } = useMutation({
+    mutationFn: () =>
+      createNewSubcategory(newSubcategory),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['categories'])
+    }
+  })
+
+
 
   const handleFieldChange = function (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) { setFetchedProduct(prev => ({ ...prev, [e.target.name]: e.target.value })) }
 
@@ -186,8 +207,8 @@ export default function ProductEditPage() {
           <TextField value={newCategory.description} label="Category Description" onChange={(e) => setNewCategory(prev => ({ ...prev, description: e.target.value }))} />
           <button onClick={() => { createCategoryMutation() }} className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-green-200" >Add Category</button>
 
-          <TextField name="newSubcategoryName" label={`Add Subcategory for selected Category: ${selectedCategory?.title ?? ''}`} />
-          <button onClick={() => { }} className="disabled:bg-gray-300 block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-green-200" disabled={!selectedCategory}>Add SubCategory</button>
+          <TextField label={`Add Subcategory for selected Category: ${selectedCategory?.title ?? ''}`} value={newSubcategory.title} onChange={(e) => setNewSubcategory(prev => ({ ...prev, title: e.target.value }))} />
+          <button onClick={() => createSubcategoryMutation()} className="disabled:bg-gray-300 block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-green-200" disabled={!selectedCategory}>Add SubCategory</button>
 
           <button onClick={() => deleteCategoryMutation()} className="disabled:bg-gray-300 block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-red-200" disabled={!selectedCategory}>Delete Selected Category</button>
           <button onClick={() => { }} className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-red-200" >Delete Selected SubCategory</button>
