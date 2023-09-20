@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import React, { ChangeEvent, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { ICategory, Product, Subcategory } from '../types/types'
 import { useFormik } from 'formik';
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,6 +8,9 @@ import { TextArea, TextField } from './TextComponents';
 import { createNewCategory, createNewProduct, createNewSubcategory, deleteCategory, deleteProduct, deleteSubcategory, updateProduct } from '../common/ApiService';
 import { getCategoryBySubcategoryId } from '../common/utils';
 import { useMutation, useQueryClient } from 'react-query';
+import ImageUpload from './ImageUpload';
+import { conf } from '../common/config';
+
 
 const defaultValues: Product = {
   id: undefined,
@@ -18,7 +21,8 @@ const defaultValues: Product = {
   isNew: true,
   isAvailable: true,
   subcategoryId: null,
-  categoryId: null
+  categoryId: null,
+  images: []
 }
 
 const defaultNewCategoryValues = {
@@ -32,7 +36,7 @@ const defaultNewSubcategoryValues = {
   categoryId: null
 }
 
-export default function ProductEditPage() {
+function EditProductPage() {
   const queryClient = useQueryClient()
   const { id } = useParams();
   const NumberId = id ? Number(id) : undefined
@@ -46,6 +50,7 @@ export default function ProductEditPage() {
   const [newCategory, setNewCategory] = useState<ICategory>(defaultNewCategoryValues)
   const [newSubcategory, setNewSubcategory] = useState<Subcategory>(defaultNewSubcategoryValues)
 
+  const [imageUrs, setImageUrls] = useState<string[]>([])
 
   const { isLoading, isError, } = useProduct({
     productId: NumberId!, parameters: {
@@ -59,7 +64,7 @@ export default function ProductEditPage() {
   })
 
 
-  const { isLoading: IsCategoriesLoading, refetch } = useCategories({
+  const { isLoading: IsCategoriesLoading } = useCategories({
     parameters: {
       staleTime: 0,
       cacheTime: 0,
@@ -92,7 +97,9 @@ export default function ProductEditPage() {
       navigate('/products')
     },
     onError: (err) => {
-      alert(err)
+      alert(
+        `Bro, there is some error with adding new product, probably empty fields or incorrect data. Product was not added`
+      );
     }
   })
   const { mutateAsync: updateProductMutation } = useMutation({
@@ -142,7 +149,7 @@ export default function ProductEditPage() {
 
 
 
-  const handleFieldChange = function (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) { setFetchedProduct(prev => ({ ...prev, [e.target.name]: e.target.value })) }
+  const handleFieldChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { setFetchedProduct(prev => ({ ...prev, [e.target.name]: e.target.value })) }, [])
 
   const handleDeleteProduct = async () => {
     // eslint-disable-next-line no-restricted-globals
@@ -170,6 +177,10 @@ export default function ProductEditPage() {
   useEffect(() => {
     setNewSubcategory(prev => ({ ...prev, categoryId: Number(selectedCategory?.id) }))
   }, [selectedCategory])
+
+  useEffect(() => {
+    setFetchedProduct(prev => ({ ...prev, images: imageUrs }))
+  }, [imageUrs])
 
   if (isLoading) return <div className=" justify-center w-full  items-center px-20 pt-20 pb-20">
     <h2 className="pb-10 text-xl font-bold ">LOADING...</h2></div>
@@ -221,11 +232,16 @@ export default function ProductEditPage() {
             <label className="inline-flex  items-center mt-3">
               <input name="isAvailable" checked={fetchedProduct.isAvailable} onChange={(e) => { setFetchedProduct(prev => ({ ...prev, isAvailable: !prev.isAvailable })) }} type="checkbox" className="form-checkbox h-5 w-5 tsext-red-600" /><span className=" ml-2 text-gray-700">Available</span>
             </label></div>
-
+          <ImageUpload setImageUrls={setImageUrls} />
           <button disabled={!selectedCategory} className="block rounded-xl border p-3 border-gray-500 disabled:bg-gray-300" type="submit" onClick={() => formik.submitForm()}>Save</button>
 
           {isEditPage && <button onClick={handleDeleteProduct} className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-red-200" >Delete product</button>}
+
+          {imageUrs.map(img => <img src={`${conf.API_URL}${img}`} alt="item" />)}
+
         </div>
+
+
         <div className="w-1/2 justify-center w-full flex-col items-center px-10 pt-20 pb-20">
 
           <h1 className="pb-10 text-xl font-bold">Add Category</h1>
@@ -242,3 +258,5 @@ export default function ProductEditPage() {
     </>
   )
 }
+
+export default memo(EditProductPage)

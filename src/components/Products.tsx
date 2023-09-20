@@ -1,9 +1,10 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, memo } from "react";
 import { useProducts } from "../common/useProducts";
 import { Product } from "../types/types";
 import { useNavigate } from 'react-router-dom';
 
-export default function Products() {
+
+function Products() {
   const { products, isLoading, isError } = useProducts({ parameters: {} });
 
   const navigate = useNavigate();
@@ -80,3 +81,5 @@ export default function Products() {
     </div>
   );
 }
+
+export default memo(Products)

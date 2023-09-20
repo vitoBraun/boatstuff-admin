@@ -36,9 +36,7 @@ export const createNewProduct = async (newData: Product) => {
     body: JSON.stringify(prepareData(newData)),
   });
   if (!response.ok) {
-    alert(
-      `Bro, there is some error with adding new product, probably empty fields or incorrect data. Product was not added`
-    );
+    throw new Error("Something went wrong saving the product");
   }
   const data = await response.json();
   return data;
@@ -129,6 +127,24 @@ export const deleteSubcategory = async (subcategoryId: string) => {
 
   if (!response.ok) {
     throw new Error("Something went wrong deleting subcategory");
+  }
+  return data;
+};
+
+export const uploadImage = async (file: File): Promise<{ url: string }> => {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await fetch(`http://localhost:1333/file/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Something went sending images");
   }
   return data;
 };
