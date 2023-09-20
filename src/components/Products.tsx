@@ -1,12 +1,23 @@
-import React, { ReactElement, memo } from "react";
+import React, { ReactElement, memo, useState, } from "react";
 import { useProducts } from "../common/useProducts";
 import { Product } from "../types/types";
 import { useNavigate } from 'react-router-dom';
+import { convertStringToArray } from "../common/utils";
+
 
 
 function Products() {
-  const { products, isLoading, isError } = useProducts({ parameters: {} });
+  const { isLoading, isError } = useProducts({
+    parameters: {
+      onSuccess: (products: Product[]) => {
+        const transformedProducts = products?.map(product => ({ ...product, images: convertStringToArray(product.images as string, ',') }))
+        setFetchedProducts(transformedProducts)
+      }
+    }
+  });
 
+  const [fetchedProducts, setFetchedProducts] = useState<Product[]>()
+  console.log(fetchedProducts)
   const navigate = useNavigate();
   if (isLoading) {
     return <div>Loading...</div>;
@@ -18,12 +29,12 @@ function Products() {
 
   const Headers = [
     "id",
+    "image",
     "title",
     "short description",
     "availability",
     "subcategory",
     "price",
-    "images",
   ];
 
   const Cell = ({
@@ -56,7 +67,7 @@ function Products() {
                 </tr>
               </thead>
               <tbody>
-                {(products as Product[])?.map((product) => (
+                {(fetchedProducts as Product[])?.map((product) => (
                   <tr key={product.id}
                     className="bg-gray-100 border-b hover:bg-gray-200 cursor-pointer"
                     onClick={() => {
@@ -64,12 +75,14 @@ function Products() {
                     }}
                   >
                     <Cell text={product.id} />
+                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                      {product.images?.length && <img className="max-h-10" src={product?.images?.[0]} alt="pic" />}
+                    </td>
                     <Cell text={product.title} />
                     <Cell text={product.shortDescription} />
                     <Cell text={product.isAvailable ? "YES" : "NO"} />
                     <Cell text={product.subcategoryId} />
                     <Cell text={product.price} />
-                    <Cell text={product.images} />
                   </tr>
                 ))}
               </tbody>

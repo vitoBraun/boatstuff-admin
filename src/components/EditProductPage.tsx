@@ -10,6 +10,7 @@ import { convertStringToArray, getCategoryBySubcategoryId } from '../common/util
 import { useMutation, useQueryClient } from 'react-query';
 import ImageUpload from './ImageUpload';
 import { conf } from '../common/config';
+import ImageCard from './ImageCard';
 
 
 const defaultValues: Product = {
@@ -43,14 +44,18 @@ function EditProductPage() {
   const isEditPage = typeof id === 'string'
   const navigate = useNavigate();
 
-
   const [fetchedProduct, setFetchedProduct] = useState<Product>(defaultValues)
   const [fetchedCategories, setFetchedCategories] = useState<ICategory[]>([])
 
   const [newCategory, setNewCategory] = useState<ICategory>(defaultNewCategoryValues)
   const [newSubcategory, setNewSubcategory] = useState<Subcategory>(defaultNewSubcategoryValues)
 
-  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const addImageUrl = (image: string) => {
+    setFetchedProduct((prev) => {
+      return { ...prev, images: (prev.images ?? []).concat(image) || [] }
+    })
+  }
+
 
   const { isLoading, isError, } = useProduct({
     productId: NumberId!, parameters: {
@@ -179,12 +184,6 @@ function EditProductPage() {
     setNewSubcategory(prev => ({ ...prev, categoryId: Number(selectedCategory?.id) }))
   }, [selectedCategory])
 
-  useEffect(() => {
-    setFetchedProduct(prev => ({ ...prev, images: [...fetchedProduct?.images as string[], ...imageUrls] }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUrls])
-
-
   if (isLoading) return <div className=" justify-center w-full  items-center px-20 pt-20 pb-20">
     <h2 className="pb-10 text-xl font-bold ">LOADING...</h2></div>
 
@@ -235,18 +234,23 @@ function EditProductPage() {
             <label className="inline-flex  items-center mt-3">
               <input name="isAvailable" checked={fetchedProduct.isAvailable} onChange={(e) => { setFetchedProduct(prev => ({ ...prev, isAvailable: !prev.isAvailable })) }} type="checkbox" className="form-checkbox h-5 w-5 tsext-red-600" /><span className=" ml-2 text-gray-700">Available</span>
             </label></div>
-          <ImageUpload setImageUrls={setImageUrls} />
+
           <button disabled={!selectedCategory} className="block rounded-xl border p-3 border-gray-500 disabled:bg-gray-300" type="submit" onClick={() => formik.submitForm()}>Save</button>
 
           {isEditPage && <button onClick={handleDeleteProduct} className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-red-200" >Delete product</button>}
 
-          {(fetchedProduct?.images as string[])?.map(img => <img src={`${conf.API_URL}${img}`} alt="item" />)}
-
+          <h2 className="pb-10 text-xl font-bold mt-20">Add Images</h2>
+          <ImageUpload setImageUrls={addImageUrl} />
+          <div className="grid grid-cols-2 gap-2">
+            {Array.isArray(fetchedProduct?.images) && fetchedProduct?.images.map(img =>
+              <ImageCard key={img}>
+                <img src={`${conf.API_URL}${img}`} alt="item" className="object-cover" />
+              </ImageCard >
+            )}
+          </div>
         </div>
 
-
-        <div className="w-1/2 justify-center w-full flex-col items-center px-10 pt-20 pb-20">
-
+        <div className="w-1 /2 justify-center w-full flex-col items-center px-10 pt-20 pb-20">
           <h1 className="pb-10 text-xl font-bold">Add Category</h1>
           <TextField value={newCategory.title} label="Category Title" onChange={(e) => setNewCategory(prev => ({ ...prev, title: e.target.value }))} />
           <TextField value={newCategory.description} label="Category Description" onChange={(e) => setNewCategory(prev => ({ ...prev, description: e.target.value }))} />
