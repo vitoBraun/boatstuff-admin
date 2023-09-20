@@ -15,7 +15,7 @@ export const TextField = ({ onChange, value, name, label, ...restProps }: { onCh
 export const TextArea = ({ onChange, value, name, label, ...restProps }: { onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void, value: string | number, name: string, label: string }) => {
     return <><label htmlFor="title" className="text-sm text-navy-700 font-bold">{label}</label>
         <textarea
-            rows={3}
+            rows={5}
             name={name}
             onChange={onChange}
             value={value}

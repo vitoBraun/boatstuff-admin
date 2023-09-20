@@ -7,10 +7,12 @@ export default function useCategories({ parameters }: { parameters: any }) {
     data: categories,
     isLoading,
     isError,
+    refetch,
   } = useQuery<ICategory[]>("categories", () => fetchCategories(), parameters);
   return {
     categories,
     isLoading,
     isError,
+    refetch,
   };
 }

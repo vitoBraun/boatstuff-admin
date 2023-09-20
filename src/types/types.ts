@@ -9,7 +9,7 @@ export type Subcategory = {
   id?: number;
   title: string;
   description: string;
-  categoryId?: number;
+  categoryId: number | null;
 };
 
 export type Product = {

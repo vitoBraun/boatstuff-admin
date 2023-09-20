@@ -35,7 +35,11 @@ export const createNewProduct = async (newData: Product) => {
     },
     body: JSON.stringify(prepareData(newData)),
   });
-
+  if (!response.ok) {
+    alert(
+      `Bro, there is some error with adding new product, probably empty fields or incorrect data. Product was not added`
+    );
+  }
   const data = await response.json();
   return data;
 };
@@ -91,7 +95,9 @@ export const createNewSubcategory = async (subcategory: Subcategory) => {
     },
     body: JSON.stringify(subcategory),
   });
-
+  if (!response.ok) {
+    alert(`Bro, there is some error in adding subcategory, try again`);
+  }
   const data = await response.json();
   return data;
 };
@@ -104,7 +110,25 @@ export const deleteCategory = async (categoryId: string) => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error("Something went wrong deleting category");
+    alert(
+      `By the way,  you can't delete category if it has subcategory, bro. Delete all its subcategories first`
+    );
+  }
+  return data;
+};
+
+export const deleteSubcategory = async (subcategoryId: string) => {
+  const response = await fetch(
+    `http://localhost:1333/category/subcategory/${subcategoryId}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error("Something went wrong deleting subcategory");
   }
   return data;
 };
