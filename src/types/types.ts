@@ -22,5 +22,5 @@ export type Product = {
   isAvailable: boolean;
   subcategoryId: number | null;
   categoryId: number | null;
-  images?: string[];
+  images?: string | string[];
 };

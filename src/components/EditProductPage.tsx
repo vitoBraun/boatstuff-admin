@@ -6,7 +6,7 @@ import { useProduct } from '../common/useProducts';
 import useCategories from '../common/useCategories';
 import { TextArea, TextField } from './TextComponents';
 import { createNewCategory, createNewProduct, createNewSubcategory, deleteCategory, deleteProduct, deleteSubcategory, updateProduct } from '../common/ApiService';
-import { getCategoryBySubcategoryId } from '../common/utils';
+import { convertStringToArray, getCategoryBySubcategoryId } from '../common/utils';
 import { useMutation, useQueryClient } from 'react-query';
 import ImageUpload from './ImageUpload';
 import { conf } from '../common/config';
@@ -50,7 +50,7 @@ function EditProductPage() {
   const [newCategory, setNewCategory] = useState<ICategory>(defaultNewCategoryValues)
   const [newSubcategory, setNewSubcategory] = useState<Subcategory>(defaultNewSubcategoryValues)
 
-  const [imageUrs, setImageUrls] = useState<string[]>([])
+  const [imageUrls, setImageUrls] = useState<string[]>([])
 
   const { isLoading, isError, } = useProduct({
     productId: NumberId!, parameters: {
@@ -58,6 +58,7 @@ function EditProductPage() {
       cacheTime: 0,
       staleTime: Infinity,
       onSuccess: (data: Product) => {
+        data.images = convertStringToArray(data.images as string, ',')
         setFetchedProduct(data)
       }
     }
@@ -179,8 +180,10 @@ function EditProductPage() {
   }, [selectedCategory])
 
   useEffect(() => {
-    setFetchedProduct(prev => ({ ...prev, images: imageUrs }))
-  }, [imageUrs])
+    setFetchedProduct(prev => ({ ...prev, images: [...fetchedProduct?.images as string[], ...imageUrls] }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageUrls])
+
 
   if (isLoading) return <div className=" justify-center w-full  items-center px-20 pt-20 pb-20">
     <h2 className="pb-10 text-xl font-bold ">LOADING...</h2></div>
@@ -237,7 +240,7 @@ function EditProductPage() {
 
           {isEditPage && <button onClick={handleDeleteProduct} className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-red-200" >Delete product</button>}
 
-          {imageUrs.map(img => <img src={`${conf.API_URL}${img}`} alt="item" />)}
+          {(fetchedProduct?.images as string[])?.map(img => <img src={`${conf.API_URL}${img}`} alt="item" />)}
 
         </div>
 
