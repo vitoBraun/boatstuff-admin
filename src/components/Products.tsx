@@ -76,7 +76,7 @@ export default function Products() {
           </div>
         </div>
       </div>
-      <button className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400" onClick={() => { navigate('/product') }}>Add new product</button>
+      <button className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-green-200 w-1/2" onClick={() => { navigate('/product') }}>Add new product</button>
     </div>
   );
 }
