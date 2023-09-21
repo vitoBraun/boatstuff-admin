@@ -6,10 +6,9 @@ import { useProduct } from '../common/useProducts';
 import useCategories from '../common/useCategories';
 import { TextArea, TextField } from '../components/TextComponents';
 import { createNewCategory, createNewProduct, createNewSubcategory, deleteCategory, deleteProduct, deleteSubcategory, logout, updateProduct } from '../common/ApiService';
-import { convertStringToArray, getCategoryBySubcategoryId } from '../common/utils';
+import { convertStringToArray, getCategoryBySubcategoryId, makeImgUrl } from '../common/utils';
 import { useMutation, useQueryClient } from 'react-query';
 import ImageUpload from '../components/ImageUpload';
-import { conf } from '../common/config';
 import ImageCard from '../components/ImageCard';
 
 
@@ -248,7 +247,7 @@ function EditProductPage() {
           <div className="grid grid-cols-2 gap-2">
             {Array.isArray(fetchedProduct?.images) && fetchedProduct?.images.map(img =>
               <ImageCard key={img} onDelete={() => onDeleteImage(img)}>
-                <img src={`${conf.API_URL}${img}`} alt="item" className="object-cover" />
+                <img src={makeImgUrl(img)} alt="item" className="object-cover" />
               </ImageCard >
             )}
           </div>

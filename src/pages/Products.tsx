@@ -2,7 +2,8 @@ import React, { ReactElement, memo, useState, } from "react";
 import { useProducts } from "../common/useProducts";
 import { Product } from "../types/types";
 import { useNavigate } from 'react-router-dom';
-import { convertStringToArray } from "../common/utils";
+import { convertStringToArray, makeImgUrl } from "../common/utils";
+import { conf } from "../common/config";
 
 
 
@@ -75,7 +76,7 @@ function Products() {
                   >
                     <Cell text={product.id} />
                     <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      {product.images?.length ? <img className="max-h-10" src={product?.images?.[0]} alt="pic" /> : null}
+                      {product.images?.length ? <img className="max-h-10" src={makeImgUrl(product?.images?.[0])} alt="pic" /> : null}
                     </td>
                     <Cell text={product.title} />
                     <Cell text={product.shortDescription} />

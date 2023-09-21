@@ -1,4 +1,5 @@
 import { ICategory, Product } from "../types/types";
+import { conf } from "./config";
 
 export function convertArrayToString(array: string[]): string {
   return array?.join(",");
@@ -9,6 +10,10 @@ export function convertStringToArray(string: string): string[] {
     return []; // Return an empty array
   }
   return string?.split(",");
+}
+
+export function makeImgUrl(url: string) {
+  return `${conf.API_URL}${url}`;
 }
 
 export const prepareData = (data: Product) => {

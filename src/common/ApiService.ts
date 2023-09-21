@@ -40,7 +40,7 @@ export const fetchProducts = async () => {
 };
 
 export const fetchProduct = async (productId: number) => {
-  const resp = await fetch(`/product/${productId}`);
+  const resp = await makeApiRequest(`/product/${productId}`);
   return resp.json();
 };
 

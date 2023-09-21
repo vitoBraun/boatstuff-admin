@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import Products from "./pages/Products";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import Home from "./pages/Home";
 import EditProductPage from "./pages/EditProductPage";
 import LoginPage from "./pages/LoginPage";
 
@@ -19,7 +18,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Products />} />
             <Route path="/products" element={<Products />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/product/:id?" element={<EditProductPage />} />
