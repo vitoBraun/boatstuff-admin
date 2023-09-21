@@ -4,13 +4,13 @@ import { useFormik } from 'formik';
 import { useNavigate, useParams } from "react-router-dom";
 import { useProduct } from '../common/useProducts';
 import useCategories from '../common/useCategories';
-import { TextArea, TextField } from './TextComponents';
-import { createNewCategory, createNewProduct, createNewSubcategory, deleteCategory, deleteProduct, deleteSubcategory, updateProduct } from '../common/ApiService';
+import { TextArea, TextField } from '../components/TextComponents';
+import { createNewCategory, createNewProduct, createNewSubcategory, deleteCategory, deleteProduct, deleteSubcategory, logout, updateProduct } from '../common/ApiService';
 import { convertStringToArray, getCategoryBySubcategoryId } from '../common/utils';
 import { useMutation, useQueryClient } from 'react-query';
-import ImageUpload from './ImageUpload';
+import ImageUpload from '../components/ImageUpload';
 import { conf } from '../common/config';
-import ImageCard from './ImageCard';
+import ImageCard from '../components/ImageCard';
 
 
 const defaultValues: Product = {
@@ -56,14 +56,13 @@ function EditProductPage() {
     })
   }
 
-
   const { isLoading, isError, } = useProduct({
     productId: NumberId!, parameters: {
       enabled: id !== undefined,
       cacheTime: 0,
       staleTime: Infinity,
       onSuccess: (data: Product) => {
-        data.images = convertStringToArray(data.images as string, ',')
+        data.images = convertStringToArray(data.images as string)
         setFetchedProduct(data)
       }
     }
@@ -86,7 +85,6 @@ function EditProductPage() {
 
   const selectedCategory = useMemo(() => fetchedCategories?.find(cat => cat.id === fetchedProduct?.categoryId), [fetchedCategories,
     fetchedProduct])
-
 
   const subcategoriesOfSelectedCategory = useMemo(() => fetchedCategories?.find(cat => cat.id === selectedCategory?.id)?.subcategories, [fetchedCategories,
     selectedCategory])
@@ -153,8 +151,6 @@ function EditProductPage() {
     }
   })
 
-
-
   const handleFieldChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => { setFetchedProduct(prev => ({ ...prev, [e.target.name]: e.target.value })) }, [])
 
   const handleDeleteProduct = async () => {
@@ -180,6 +176,10 @@ function EditProductPage() {
     }
   });
 
+  const onDeleteImage = useCallback((img: string,) => {
+    setFetchedProduct(prev => ({ ...prev, images: (prev.images as string[])?.filter((exisTimg) => exisTimg !== img) }))
+  }, [])
+
   useEffect(() => {
     setNewSubcategory(prev => ({ ...prev, categoryId: Number(selectedCategory?.id) }))
   }, [selectedCategory])
@@ -192,12 +192,16 @@ function EditProductPage() {
 
   return (
     <>
+      <button className="m-4 block hover:border-white rounded-xl border p-3 border-gray-500 disabled:text-gray-400" onClick={() => {
+        logout().finally(() => {
+          navigate('/login')
+        })
+      }}>LOGOUT</button>
       <button className="m-4 block hover:border-white rounded-xl border p-3 border-gray-500 disabled:text-gray-400" onClick={() => { navigate('/products') }}>To the products list</button>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
         <div className=" justify-center w-full  items-center px-10 pt-20 pb-20">
 
           <h2 className="pb-10 text-xl font-bold ">{!id ? 'Create' : 'Edit'} product {id ? `'№${id}` : ''} {fetchedProduct.title ?? ""}</h2>
-
 
           <TextField name="title" label="Title" value={fetchedProduct.title} onChange={handleFieldChange} />
           <TextField name="shortDescription" label="Short description" value={fetchedProduct.shortDescription} onChange={handleFieldChange} />
@@ -235,15 +239,15 @@ function EditProductPage() {
               <input name="isAvailable" checked={fetchedProduct.isAvailable} onChange={(e) => { setFetchedProduct(prev => ({ ...prev, isAvailable: !prev.isAvailable })) }} type="checkbox" className="form-checkbox h-5 w-5 tsext-red-600" /><span className=" ml-2 text-gray-700">Available</span>
             </label></div>
 
-          <button disabled={!selectedCategory} className="block rounded-xl border p-3 border-gray-500 disabled:bg-gray-300" type="submit" onClick={() => formik.submitForm()}>Save</button>
+          <button disabled={!selectedCategory} className="m-5 bg-green-200 inline-block rounded-xl border p-3 border-gray-500 disabled:bg-gray-300" type="submit" onClick={() => formik.submitForm()}>Save Product</button>
 
-          {isEditPage && <button onClick={handleDeleteProduct} className="block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-red-200" >Delete product</button>}
+          {isEditPage && <button onClick={handleDeleteProduct} className="m-5 bg-red-200 inline-block rounded-xl border p-3 border-gray-500 disabled:bg-gray-300" >Delete product</button>}
 
           <h2 className="pb-10 text-xl font-bold mt-20">Add Images</h2>
-          <ImageUpload setImageUrls={addImageUrl} />
+          <ImageUpload setImageUrl={addImageUrl} />
           <div className="grid grid-cols-2 gap-2">
             {Array.isArray(fetchedProduct?.images) && fetchedProduct?.images.map(img =>
-              <ImageCard key={img}>
+              <ImageCard key={img} onDelete={() => onDeleteImage(img)}>
                 <img src={`${conf.API_URL}${img}`} alt="item" className="object-cover" />
               </ImageCard >
             )}
@@ -258,7 +262,7 @@ function EditProductPage() {
 
           <h2 className="mt-10">{`Add Subcategory for selected Category: ${selectedCategory?.title ?? ''}`}</h2>
           <TextField label={'Subcategory title'} value={newSubcategory.title} onChange={(e) => setNewSubcategory(prev => ({ ...prev, title: e.target.value }))} />
-          <TextField label={`Subcategory description: ${selectedCategory?.description ?? ''}`} value={newSubcategory.description} onChange={(e) => setNewSubcategory(prev => ({ ...prev, description: e.target.value }))} />
+          <TextField label={`Subcategory description`} value={newSubcategory.description} onChange={(e) => setNewSubcategory(prev => ({ ...prev, description: e.target.value }))} />
           <button onClick={() => createSubcategoryMutation()} className="disabled:bg-gray-300 block rounded-xl border p-3 border-gray-500 disabled:text-gray-400 bg-green-200" disabled={!selectedCategory}>Add SubCategory</button>
         </div >
       </div >

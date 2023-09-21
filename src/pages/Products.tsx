@@ -10,14 +10,13 @@ function Products() {
   const { isLoading, isError } = useProducts({
     parameters: {
       onSuccess: (products: Product[]) => {
-        const transformedProducts = products?.map(product => ({ ...product, images: convertStringToArray(product.images as string, ',') }))
+        const transformedProducts = products?.map(product => ({ ...product, images: convertStringToArray(product.images as string) }))
         setFetchedProducts(transformedProducts)
       }
     }
   });
 
   const [fetchedProducts, setFetchedProducts] = useState<Product[]>()
-  console.log(fetchedProducts)
   const navigate = useNavigate();
   if (isLoading) {
     return <div>Loading...</div>;
@@ -76,7 +75,7 @@ function Products() {
                   >
                     <Cell text={product.id} />
                     <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      {product.images?.length && <img className="max-h-10" src={product?.images?.[0]} alt="pic" />}
+                      {product.images?.length ? <img className="max-h-10" src={product?.images?.[0]} alt="pic" /> : null}
                     </td>
                     <Cell text={product.title} />
                     <Cell text={product.shortDescription} />
